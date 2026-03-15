@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Console IEN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1200px; margin: auto; }
+        .card { background: white; padding: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-top: 3px solid #ddd; }
+        .btn-a { display:block; width:100%; text-align:left; padding:12px; margin-bottom:10px; border:1px solid #eee; background:white; color:#ff8c00; font-weight:bold; cursor:pointer; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center;"><i class="fa fa-shield-alt"></i> Console d'administration - IEN</h2>
+
+<div class="grid">
+    <div class="card">
+        <h3><i class="fa fa-wrench"></i> Actions rapides</h3>
+        
+        <details>
+            <summary class="btn-a">Créer un utilisateur <i class="fa fa-plus"></i></summary>
+            <form action="/admin/create-user" method="POST" style="padding:15px; background:#f9f9f9;">
+                <input type="text" name="firstname" placeholder="Prénom" required>
+                <input type="text" name="lastname" placeholder="Nom" required>
+                <input type="text" name="username" placeholder="Identifiant" required>
+                <input type="password" name="password" placeholder="Mot de passe" required>
+                <select name="fonction">
+                    <option>Élève</option><option>Professeur</option><option>CPE</option><option>Directeur</option>
+                </select>
+                <button type="submit" style="width:100%; background:#009cc3; color:white; border:none; padding:10px; cursor:pointer;">Valider</button>
+            </form>
+        </details>
+
+        <details>
+            <summary class="btn-a">Créer un groupe <i class="fa fa-users"></i></summary>
+            <form action="/admin/create-group" method="POST" style="padding:15px; background:#f9f9f9;">
+                <input type="text" name="group_name" placeholder="Nom du groupe (ex: Ensemble des profs)" required>
+                <button type="submit" style="width:100%; background:#009cc3; color:white; border:none; padding:10px; cursor:pointer;">Créer le groupe</button>
+            </form>
+        </details>
+
+        <form action="/admin/flash" method="POST" style="margin-top:20px;">
+            <input type="text" name="content" placeholder="MESSAGE FLASH D'URGENCE..." required>
+            <button type="submit" style="width:100%; background:#d32f2f; color:white; border:none; padding:10px; cursor:pointer; font-weight:bold;">ENVOYER L'ALERTE</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3><i class="fa fa-search"></i> Recherche</h3>
+        <input type="text" placeholder="Rechercher un utilisateur...">
+        <div style="margin-top:20px;">
+            <strong>Groupes existants :</strong>
+            <ul><% groups.forEach(g => { %> <li><%= g.name %></li> <% }) %></ul>
+        </div>
+    </div>
+
+    <div class="card" style="grid-column: span 2;">
+        <h3>Gestion des personnels</h3>
+        <table>
+            <thead><tr><th>NOM PRÉNOM</th><th>ÉTABLISSEMENT</th><th>FONCTION</th><th>ACTION</th></tr></thead>
+            <tbody>
+                <% users.forEach(u => { %>
+                <tr>
+                    <td><strong><%= u.lastname.toUpperCase() %></strong> <%= u.firstname %></td>
+                    <td><%= u.etablissement %></td>
+                    <td>
+                        <form action="/admin/update-fonction" method="POST">
+                            <input type="hidden" name="username" value="<%= u.username %>">
+                            <select name="fonction" onchange="this.form.submit()">
+                                <option <%= u.fonction=='Élève'?'selected':'' %>>Élève</option>
+                                <option <%= u.fonction=='Professeur'?'selected':'' %>>Professeur</option>
+                                <option <%= u.fonction=='CPE'?'selected':'' %>>CPE</option>
+                                <option <%= u.fonction=='Directeur'?'selected':'' %>>Directeur</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td><button onclick="alert('Identifiant: <%= u.username %>\nÉtablissement: Carrington')">Voir profil</button></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

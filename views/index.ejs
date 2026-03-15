@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>ENT Carrington</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; }
+        .navbar { background: #009cc3; color: white; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .container { display: grid; grid-template-columns: 250px 1fr; gap: 20px; padding: 20px; max-width: 1300px; margin: auto; }
+        .btn-compose { background: #ff8c00; color: white; border: none; padding: 12px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .mail-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; background: white; transition: 0.2s; }
+        .mail-item:hover { background: #f9f9f9; }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 5% auto; padding: 25px; width: 500px; border-radius: 10px; position: relative; }
+        #suggs { position: absolute; background: white; border: 1px solid #ddd; width: 100%; z-index: 10; display: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .sugg-row { display: flex; align-items: center; padding: 10px; cursor: pointer; }
+        .circle { width: 35px; height: 35px; border-radius: 50%; color: white; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div style="font-weight: bold; font-size: 20px;">ENT Carrington</div>
+    <div><%= user.firstname %> <%= user.lastname %> <a href="/logout" style="color:white; margin-left:15px;"><i class="fa fa-sign-out-alt"></i></a></div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <button class="btn-compose" onclick="document.getElementById('writeM').style.display='block'"><i class="fa fa-edit"></i> Nouveau message</button>
+        <div style="background:white; margin-top:20px; padding:10px; border-radius:5px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <a href="/" style="display:block; padding:10px; text-decoration:none; color:#009cc3; font-weight:bold;">Messagerie</a>
+            <% if(user.role === 'admin') { %><a href="/admin" style="display:block; padding:10px; text-decoration:none; color:#ff8c00; font-weight:bold;">Console IEN</a><% } %>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <% if (flashMessage) { %>
+            <div style="background: #d32f2f; color: white; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 4px solid #b71c1c; display: flex; align-items: center; gap: 15px;">
+                <i class="fa fa-exclamation-triangle" style="font-size: 30px;"></i>
+                <div><strong>URGENCE :</strong> <%= flashMessage.content %></div>
+            </div>
+        <% } %>
+
+        <div style="background:white; padding:20px; border-radius:8px;">
+            <h3 style="margin-top:0;">Boîte de réception</h3>
+            <% messages.forEach(m => { %>
+                <div class="mail-item" onclick="openMail('<%= m.sender_name %>', '<%= m.subject %>', `<%= m.content %>`)">
+                    <strong><%= m.sender_name %></strong> - <span style="color:#009cc3"><%= m.subject %></span>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</div>
+
+<div id="readM" class="modal"><div class="modal-content">
+    <h2 id="rSubj" style="color:#009cc3"></h2>
+    <p>De: <strong id="rSend"></strong></p>
+    <div id="rBody" style="background:#f4f4f4; padding:20px; border-radius:5px; white-space: pre-wrap;"></div>
+    <button onclick="document.getElementById('readM').style.display='none'" style="margin-top:15px; padding:10px 20px; cursor:pointer;">Fermer</button>
+</div></div>
+
+<div id="writeM" class="modal"><div class="modal-content">
+    <h3>Nouveau message</h3>
+    <form action="/send-mail" method="POST" autocomplete="off">
+        <div style="position:relative;">
+            <input type="text" id="toIn" name="to" placeholder="Destinataire (identifiant)" required style="width:100%; padding:10px; margin-bottom:10px;">
+            <div id="suggs"></div>
+        </div>
+        <input type="text" name="subject" placeholder="Objet" required style="width:100%; padding:10px; margin-bottom:10px;">
+        <textarea name="content" placeholder="Message..." required style="width:100%; padding:10px; height:120px; border:1px solid #ddd;"></textarea>
+        <button type="submit" style="background:#ff8c00; color:white; border:none; padding:10px 25px; margin-top:10px; cursor:pointer; font-weight:bold;">Envoyer</button>
+        <button type="button" onclick="document.getElementById('writeM').style.display='none'" style="margin-left:10px;">Annuler</button>
+    </form>
+</div></div>
+
+<script>
+    function openMail(s, sub, c) {
+        document.getElementById('rSend').innerText = s;
+        document.getElementById('rSubj').innerText = sub;
+        document.getElementById('rBody').innerText = c;
+        document.getElementById('readM').style.display='block';
+    }
+
+    const toIn = document.getElementById('toIn');
+    const suggs = document.getElementById('suggs');
+    const colors = ['#e1bee7', '#ffcdd2', '#c5cae9', '#b3e5fc', '#b2dfdb'];
+
+    toIn.addEventListener('input', async () => {
+        if(toIn.value.length < 1) { suggs.style.display='none'; return; }
+        const res = await fetch('/api/users/search?q='+toIn.value);
+        const users = await res.json();
+        suggs.innerHTML = users.map((u, i) => `
+            <div class="sugg-row" onclick="toIn.value='${u.username}'; suggs.style.display='none'">
+                <div class="circle" style="background:${colors[i%5]}">${u.firstname[0]}${u.lastname[0]}</div>
+                <div><strong>${u.firstname} ${u.lastname}</strong><br><small>${u.username}</small></div>
+            </div>
+        `).join('');
+        suggs.style.display='block';
+    });
+</script>
+</body>
+</html>

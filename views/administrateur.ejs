@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --admin-blue: #004a99; --accent: #ff8c00; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f9; margin: 0; display: flex; }
+        
+        /* Barre latérale (Sidebar) */
+        .sidebar { width: 250px; background: var(--admin-blue); height: 100vh; color: white; padding: 20px; position: fixed; }
+        .sidebar h2 { font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+        .menu-item { padding: 15px; cursor: pointer; transition: 0.3s; border-radius: 8px; margin-bottom: 5px; }
+        .menu-item:hover { background: rgba(255,255,255,0.1); transform: translateX(5px); }
+        .menu-item i { margin-right: 10px; }
+
+        /* Contenu principal */
+        .main-content { margin-left: 290px; padding: 40px; width: calc(100% - 330px); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+
+        /* Tuiles de statistiques avec transitions */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+        .stat-card { 
+            background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: all 0.4s ease; border-top: 4px solid var(--admin-blue);
+        }
+        .stat-card:hover { transform: translateY(-10px); box-shadow: 0 12px 25px rgba(0,0,0,0.1); }
+        .stat-card h3 { color: #888; font-size: 14px; margin: 0; }
+        .stat-card p { font-size: 32px; font-weight: bold; margin: 10px 0 0; color: #333; }
+
+        /* Tableau des utilisateurs */
+        .user-table { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: #888; padding: 15px; border-bottom: 1px solid #eee; }
+        td { padding: 15px; border-bottom: 1px solid #f9f9f9; }
+        .role-badge { background: #e3f2fd; color: #1976d2; padding: 5px 10px; border-radius: 20px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Fallon CARRINGTON Admin</h2>
+        <div class="menu-item"><i class="fa fa-chart-line"></i> Vue d'ensemble</div>
+        <div class="menu-item"><i class="fa fa-users"></i> Utilisateurs</div>
+        <div class="menu-item"><i class="fa fa-envelope"></i> Tous les messages</div>
+        <div class="menu-item"><i class="fa fa-cog"></i> Paramètres académie</div>
+        <div class="menu-item" style="margin-top: 50px; color: #ffab40;" onclick="window.close()"><i class="fa fa-times"></i> Fermer l'onglet</div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Tableau de Bord Intégral</h1>
+            <div style="background: white; padding: 10px 20px; border-radius: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <i class="fa fa-crown" style="color: gold;"></i> Dirigeant : <%= user.firstname %>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>MEMBRES ACTIFS</h3>
+                <p><%= stats.members %></p>
+            </div>
+            <div class="stat-card">
+                <h3>MESSAGES ÉCHANGÉS</h3>
+                <p><%= stats.messages %></p>
+            </div>
+            <div class="stat-card" style="border-top-color: var(--accent);">
+                <h3>STATUT SERVEUR</h3>
+                <p style="color: #4CAF50;">EN LIGNE</p>
+            </div>
+        </div>
+
+        <div class="user-table">
+            <h3>Gestion des membres</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>NOM / PRÉNOM</th>
+                        <th>IDENTIFIANT</th>
+                        <th>RÔLE</th>
+                        <th>ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(u => { %>
+                    <tr>
+                        <td><strong><%= u.lastname %></strong> <%= u.firstname %></td>
+                        <td><%= u.username %></td>
+                        <td><span class="role-badge"><%= u.role %></span></td>
+                        <td>
+                            <i class="fa fa-edit" style="color: #4CAF50; cursor: pointer; margin-right: 10px;"></i>
+                            <i class="fa fa-trash" style="color: #f44336; cursor: pointer;"></i>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

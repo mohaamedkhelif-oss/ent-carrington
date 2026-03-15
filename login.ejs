@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - ENT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f7f9; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Bandeau Bleu du haut */
+        .top-header { background-color: #009cc3; height: 35%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .logo-ent { position: absolute; top: 20px; left: 20px; display: flex; align-items: center; color: white; font-weight: bold; font-size: 24px; }
+        .logo-ent img { height: 40px; margin-right: 10px; }
+        .title-page { color: white; font-size: 28px; margin-bottom: 20px; }
+
+        /* Carte de connexion */
+        .login-card { background: white; width: 450px; padding: 40px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); position: absolute; top: 50%; left: 50%; transform: translate(-50%, -40%); }
+        
+        .input-group { margin-bottom: 25px; text-align: left; }
+        .input-group label { display: block; color: #666; font-size: 14px; margin-bottom: 5px; }
+        .input-group input { width: 100%; border: none; border-bottom: 1px solid #ccc; padding: 10px 0; font-size: 16px; outline: none; transition: 0.3s; }
+        .input-group input:focus { border-bottom: 2px solid #ff8c00; }
+
+        .options { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #009cc3; margin-top: 10px; }
+        .btn-submit { background-color: #ff8c00; color: white; border: none; padding: 12px 25px; border-radius: 4px; font-weight: bold; cursor: pointer; float: right; margin-top: -10px; transition: 0.3s; }
+        .btn-submit:hover { background-color: #e67e00; }
+        
+        .footer-links { text-align: left; margin-top: 20px; font-size: 13px; }
+        .footer-links a { color: #009cc3; text-decoration: none; display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="top-header">
+        <div class="logo-ent">
+            <img src="https://mon.ent77.fr/auth/resources/1623243450/login/ent77/img/logo-ent77.png" alt="ENT77"> 
+            <span>Connexion</span>
+        </div>
+        <div class="title-page">Connexion</div>
+    </div>
+
+    <div class="login-card">
+        <form action="/login" method="POST">
+            <div class="input-group">
+                <label>Identifiant</label>
+                <input type="text" name="username" placeholder="xxxx" required>
+            </div>
+
+            <div class="input-group" style="position: relative;">
+                <label>Mot de passe</label>
+                <input type="password" name="password" placeholder="••••••••••••" required>
+                <i class="fa fa-eye" style="position: absolute; right: 0; bottom: 10px; color: #ff8c00; cursor: pointer;"></i>
+            </div>
+
+            <div style="text-align: left; margin-bottom: 20px;">
+                <input type="checkbox" id="remember"> <label for="remember" style="font-size: 13px; color: #666;">Se souvenir de moi</label>
+            </div>
+
+            <div class="options">
+                <div class="footer-links">
+                    <a href="#">Identifiant oublié</a>
+                    <a href="#">Mot de passe oublié</a>
+                </div>
+                <button type="submit" class="btn-submit">Connexion</button>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>
